@@ -24,34 +24,32 @@ namespace Runtime.View
             PlaySlot
         }
 
-        [SerializeField] private Image imgSlot;
-        [SerializeField] private Color colorBlack;
-        [SerializeField] private Color colorWhite;
-        [SerializeField] private Color colorRed;
-        [SerializeField] private Color colorGreen;
         [SerializeField] 
-        private GameObject _jellyView;
+        private GameObject jellyViewPrefab;
+
+        [SerializeField] private Image imgSlot;
+
+        [SerializeField] private Color colorBlack;
+
+        [SerializeField] private Color colorWhite;
+
+        [SerializeField] private Color colorRed;
+
+        [SerializeField] private Color colorGreen;
+        [SerializeField] private JellyView _jellyView;
         private TypeSlotEnum _typeSlot;
         public TypeSlotEnum TypeSlot => _typeSlot;
         public short XMatrix { get; set; }
         public short YMatrix { get; set; }
-        public JellyView JellyView
-        {
-            get
-            {
-                if (_jellyView != null)
-                    return _jellyView.GetComponent<JellyView>();
-                return null;
-            }
-        }
+        public JellyView JellyView => _jellyView;
 
         private ColorBackgroundSlot _colorBackgroundSlot;
         private bool _isLock;
 
         private void Start()
         {
-            if(_jellyView !=null)
-                _jellyView.SetActive(false);
+            if(jellyViewPrefab !=null)
+                jellyViewPrefab.SetActive(false);
         }
 
         public void SetPlaySlotData(bool isLock)
@@ -64,13 +62,18 @@ namespace Runtime.View
         public void SetOwnerSlotData()
         {
             // GameObjectUtils.Instance.ClearAllChild(this.gameObject);
-            if (_jellyView == null)
+            if (jellyViewPrefab == null)
                 return;
-            GameObject objJelly = GameObjectUtils.Instance.SpawnGameObject(this.transform, _jellyView);
+            SpawnObjectJelly();
+            _typeSlot = TypeSlotEnum.OwnerSlot;
+        }
+
+        public void SpawnObjectJelly()
+        {
+            GameObject objJelly = GameObjectUtils.Instance.SpawnGameObject(this.transform, jellyViewPrefab);
             var script = objJelly.GetComponent<JellyView>();
             script.OnInit();
             objJelly.SetActive(true);
-            _typeSlot = TypeSlotEnum.OwnerSlot;
         }
         public void ChangeBackGround(ColorBackgroundSlot colorE)
         {
@@ -79,11 +82,12 @@ namespace Runtime.View
         }
         public void SetNewParentAndData(JellyView data)
         {
-            _jellyView = data.gameObject;
-            _jellyView.transform.SetParent(this.transform);
-            _jellyView.transform.localPosition = Vector3.zero;
-            _jellyView.transform.localRotation = Quaternion.identity;
+            jellyViewPrefab = data.gameObject;
+            jellyViewPrefab.transform.SetParent(this.transform);
+            jellyViewPrefab.transform.localPosition = Vector3.zero;
+            jellyViewPrefab.transform.localRotation = Quaternion.identity;
             // setPosition
+            _jellyView = data;
             JellySlotController.Instance.CheckNodeJelly(this);
         }
         public void RemoveJellyView()

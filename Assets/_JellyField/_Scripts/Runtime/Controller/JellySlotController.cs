@@ -91,11 +91,12 @@ namespace Runtime.Controller
             List<JellySlot> checkCurrentSlot = new List<JellySlot>();
             
             // above 
-            if (slot.XMatrix - 1 >= 0)
+            if (slot.YMatrix - 1 >= 0)
             {
-                if(IsSlotCurrent((short)(slot.XMatrix - 1),slot.YMatrix))
+                if(IsSlotCurrent((slot.XMatrix),(short)(slot.YMatrix -1)))
                 {
-                    JellySlot slotAbove = _gridSlots[slot.YMatrix, slot.XMatrix - 1];
+                    // JellySlot slotAbove = _gridSlots[slot.YMatrix, slot.XMatrix - 1];
+                    JellySlot slotAbove = _gridSlots[slot.YMatrix - 1, slot.XMatrix];
                     var gridNode = slotAbove.JellyView.GridNode;
                     var getBotLeft = gridNode[1, 0];
                     var currentSlot = slot.JellyView.GridNode[0, 0];
@@ -112,23 +113,23 @@ namespace Runtime.Controller
                 }
             }
             // bottom
-            if (slot.XMatrix + 1 < settingGrid.rows)
-            {
-                if(IsSlotCurrent((short)(slot.XMatrix + 1),slot.YMatrix))
-                    checkCurrentSlot.Add(_gridSlots[slot.YMatrix, slot.XMatrix + 1]);
-            }
-            // left
-            if (slot.YMatrix - 1 >= 0)
-            {
-                if(IsSlotCurrent(slot.XMatrix,(short)(slot.YMatrix - 1)))
-                    checkCurrentSlot.Add(_gridSlots[slot.YMatrix - 1, slot.XMatrix]);
-            }
-            // right
-            if (slot.YMatrix + 1 < settingGrid.columns)
-            {
-                if(IsSlotCurrent(slot.XMatrix,(short)(slot.YMatrix + 1)))
-                    checkCurrentSlot.Add(_gridSlots[slot.YMatrix + 1, slot.XMatrix]);
-            }
+            // if (slot.XMatrix + 1 < settingGrid.rows)
+            // {
+            //     if(IsSlotCurrent((short)(slot.XMatrix + 1),slot.YMatrix))
+            //         checkCurrentSlot.Add(_gridSlots[slot.YMatrix, slot.XMatrix + 1]);
+            // }
+            // // left
+            // if (slot.YMatrix - 1 >= 0)
+            // {
+            //     if(IsSlotCurrent(slot.XMatrix,(short)(slot.YMatrix - 1)))
+            //         checkCurrentSlot.Add(_gridSlots[slot.YMatrix - 1, slot.XMatrix]);
+            // }
+            // // right
+            // if (slot.YMatrix + 1 < settingGrid.columns)
+            // {
+            //     if(IsSlotCurrent(slot.XMatrix,(short)(slot.YMatrix + 1)))
+            //         checkCurrentSlot.Add(_gridSlots[slot.YMatrix + 1, slot.XMatrix]);
+            // }
         }
 
         private bool IsSlotCurrent(short x, short y)

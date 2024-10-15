@@ -1,4 +1,5 @@
 ﻿using System;
+using Runtime.Manager;
 using Runtime.View;
 using Unity.Collections;
 using UnityEngine;
@@ -65,8 +66,7 @@ namespace Runtime.Controller
             if ((!isOver || CheckAnyItemMoving()) || script.TypeSlot == JellySlot.TypeSlotEnum.PlaySlot)
                 return;
             isSelect = true;
-            if(script.TypeSlot != JellySlot.TypeSlotEnum.OwnerSlot)
-                script.RemoveJellyView();
+            script.RemoveJellyView();
             _oldSlot = script;
         }
         public void OnPointerUp(PointerEventData eventData)
@@ -82,8 +82,7 @@ namespace Runtime.Controller
                 return;
             }
             slot.SetNewParentAndData(jellyView);
-            if(_oldSlot != null && isSelect)
-                _oldSlot.SetOwnerSlotData();
+            JellyManager.Instance.CheckOwnerSlot();
             ClearAll();
 
         }

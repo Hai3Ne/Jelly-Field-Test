@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core;
 using Core.Utils;
 using Runtime.View;
@@ -11,7 +12,7 @@ namespace Runtime.Manager
         [SerializeField] private RectTransform rectTransformParent;
         [SerializeField] private GameObject objSlot;
         [SerializeField] private short numberSpawn;
-
+        private List<JellySlot> _listJellySlot = new List<JellySlot>();
         private void Start()
         {
             objSlot.SetActive(false);
@@ -26,8 +27,18 @@ namespace Runtime.Manager
                 JellySlot script = slot.GetComponent<JellySlot>();
                 script.SetOwnerSlotData();
                 slot.SetActive(true);
+                if(!_listJellySlot.Contains(script))
+                    _listJellySlot.Add(script);
             }
         }
-            
+
+        public void CheckOwnerSlot()
+        {
+            foreach (var jelly in _listJellySlot)
+            {
+                if(!jelly.JellyView)
+                    jelly.SpawnObjectJelly();
+            }
+        }
     }
 }

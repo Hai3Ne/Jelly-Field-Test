@@ -1638,12 +1638,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcbdb107f8b2bc742affa3019a06d92f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jellyViewPrefab: {fileID: 8323700075147577594}
   imgSlot: {fileID: 2857501039116798277}
   colorBlack: {r: 0, g: 0, b: 0, a: 1}
   colorWhite: {r: 1, g: 1, b: 1, a: 1}
   colorRed: {r: 1, g: 0, b: 0, a: 1}
   colorGreen: {r: 0, g: 1, b: 0.0022239685, a: 1}
-  _jellyView: {fileID: 8323700075147577594}
+  _jellyView: {fileID: 0}
 --- !u!114 &2857501039116798277
 MonoBehaviour:
   m_ObjectHideFlags: 0
