@@ -17,5 +17,7 @@ namespace Runtime
             public short lockX;
             public short lockY;
         }
+        
+        public enum SlotType { Locked, Inventory, Container }
     }
 }
