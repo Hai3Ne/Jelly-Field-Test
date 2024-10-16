@@ -21,9 +21,9 @@ namespace Runtime.Controller
         private Vector2 _mouseDelta;
         
         public bool isSelect = false;
-        // [HideInInspector] 
+        [HideInInspector] 
         public bool isOver = false;
-        // [HideInInspector] 
+        [HideInInspector] 
         public bool isMoving;
         
 
@@ -31,9 +31,11 @@ namespace Runtime.Controller
         [Header("Debug")]
         [ReadOnly] public Vector2Int currentSlot;
         [ReadOnly] public Vector2Int lastSlot;
+        private Camera _camera;
 
         private void Start()
         {
+            _camera = Camera.main;
             isSelect = false;
             isOver = false;
             isMoving = false;
@@ -48,18 +50,7 @@ namespace Runtime.Controller
         }
         public void OnPointerExit(PointerEventData eventData)
         {
-            /*
-            if (!CheckAnyItemMoving() && (!isCombining || isCombinable))
-            {
-                isOver = false;
-            }
-            */
         }
-        // public void OnPointerClick(PointerEventData eventData)
-        // {
-        //     if (!isOver || CheckAnyItemMoving()) return;
-        //
-        // }
         public void OnPointerDown(PointerEventData eventData)
         {
             JellySlot script = transform.GetComponentInParent<JellySlot>();
@@ -83,6 +74,8 @@ namespace Runtime.Controller
             }
             slot.SetNewParentAndData(jellyView);
             JellyManager.Instance.CheckOwnerSlot();
+            JellySlotController.Instance.CheckAllNode();
+            
             ClearAll();
 
         }
@@ -109,42 +102,38 @@ namespace Runtime.Controller
         {
             if (isMoving && _mouseDelta.magnitude > 0)         
             {
-                    RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                        rectTransform.parent as RectTransform,
-                        _mousePosition,
-                        null,
-                        out Vector2 localPoint
-                    );
-                    Vector2 targetPosition = localPoint; // - _dragOffset;
-                    Vector2 newPosition = Vector2.SmoothDamp(rectTransform.localPosition,
-                        targetPosition,
-                        ref _dragVelocity, 0.03f
-                    );
-                    rectTransform.localPosition = newPosition;
-                    // for highlight
-                    Vector2Int dimensions = new Vector2Int(1,1);
-                    Vector2 dragPos = _mousePosition - _dragOffset;
-                    Vector2Int newSlotPosition = currentSlot;
-                    float distance = Mathf.Infinity;
-                    for (int y = 0; y < JellySlotController.Instance.MaxSlotXY.y; y++)
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform.parent as RectTransform,_mousePosition,_camera,out Vector2 localPoint);
+                Vector2 targetPosition = localPoint;//- _dragOffset;
+                Vector2 newPosition = Vector2.SmoothDamp(rectTransform.localPosition,targetPosition,ref _dragVelocity, 0.03f);
+                rectTransform.localPosition = newPosition;
+                // for highlight
+                Vector2Int dimensions = new Vector2Int(1,1);
+                Vector2 dragPos = rectTransform.position;
+                Vector2Int newSlotPosition = currentSlot;
+                float distance = Mathf.Infinity;
+
+                for (int y = 0; y < JellySlotController.Instance.MaxSlotXY.y; y++)
+                {
+                    for (int x = 0; x < JellySlotController.Instance.MaxSlotXY.x; x++)
                     {
-                        for (int x = 0; x < JellySlotController.Instance.MaxSlotXY.x; x++)
+                        JellySlot slot = JellySlotController.Instance[y, x];
+                        slot.ChangeBackGround(JellySlot.ColorBackgroundSlot.None);
+                        if (!slot) continue;
+                        Vector2 slotPosition = slot.transform.position;
+
+                        float slotDistance = Vector2.Distance(dragPos, slotPosition);
+
+                        if (slotDistance < distance)
                         {
-                            JellySlot slot = JellySlotController.Instance[y, x];
-                            slot.ChangeBackGround(JellySlot.ColorBackgroundSlot.None);
-                            if (!slot) continue;
-                            Vector2 position = new Vector2(slot.transform.position.x, slot.transform.position.y);
-                            float slotDistance = Vector2.Distance(dragPos, position);
-                            if (slotDistance < distance)
-                            {
-                                if (!JellySlotController.Instance.IsCoordsValid(x, y, dimensions.x, dimensions.y))
-                                    continue;
-                                newSlotPosition = new Vector2Int(x, y);
-                                distance = slotDistance;
-                            }
+                            if (!JellySlotController.Instance.IsCoordsValid(x, y, dimensions.x, dimensions.y))
+                                continue;
+                            newSlotPosition = new Vector2Int(x, y);
+                            distance = slotDistance;
                         }
                     }
-                    currentSlot = newSlotPosition;
+                }
+
+                currentSlot = newSlotPosition;
             }
             GetInput();
         }
@@ -162,7 +151,7 @@ namespace Runtime.Controller
                     if (!isMoving)
                     {
                         Vector2 sizeDelta = rectTransform.sizeDelta;
-                        _dragOffset = new Vector2(sizeDelta.x / 2f, -sizeDelta.y / 2f);
+                        // _dragOffset = new Vector2(sizeDelta.x / 2f, -sizeDelta.y / 2f);
                         isMoving = true;
                     }
 

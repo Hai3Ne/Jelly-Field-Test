@@ -41,14 +41,15 @@ namespace Runtime.Manager
         
         public LevelSo GetCurrentLevelSo()
         {
-            if (!PlayerPrefs.HasKey(LevelKey))
+            if (!PlayerPrefs.HasKey(levelKey))
             {
                 Debug.Log("New player detected. Starting at level 1.");
+                SaveLevel(1);
                 return levelSos[0];
             }
             else
             {
-                int savedLevel = PlayerPrefs.GetInt(LevelKey);
+                int savedLevel = PlayerPrefs.GetInt(levelKey);
                 Debug.Log("Loaded existing player level: " + savedLevel);
                 return levelSos.FirstOrDefault(x => x.level == savedLevel);
             }

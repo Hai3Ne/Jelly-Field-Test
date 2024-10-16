@@ -5,6 +5,7 @@ using Runtime.Model;
 using UnityEngine;
 using System.Linq;
 using Runtime.Controller;
+using Runtime.Manager;
 using Random = UnityEngine.Random;
 
 namespace Runtime.View
@@ -28,11 +29,6 @@ namespace Runtime.View
         {
             _gridNode = new JellyNodeView[2, 2];
             _dataJelly = new JellyModel(2, 2);
-        }
-
-        public void CheckMergeColor(JellySlot slot)
-        {
-            
         }
         
         private void SetDataJelly()
@@ -63,6 +59,7 @@ namespace Runtime.View
 
         public void DealWithColor(JellyColor color,short x, short y)
         {
+            MissionManager.Instance.UpdateStateMission(color);
             _gridNode[y,x].ClearColor();
             bool allPositive = _gridNode.Cast<JellyNodeView>().All(node => node.Data.Color == color);
             //check same color

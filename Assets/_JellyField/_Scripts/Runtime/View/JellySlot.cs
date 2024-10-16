@@ -36,7 +36,7 @@ namespace Runtime.View
         [SerializeField] private Color colorRed;
 
         [SerializeField] private Color colorGreen;
-        [SerializeField] private JellyView _jellyView;
+        private JellyView _jellyView;
         private TypeSlotEnum _typeSlot;
         public TypeSlotEnum TypeSlot => _typeSlot;
         public short XMatrix { get; set; }
@@ -88,8 +88,13 @@ namespace Runtime.View
             jellyViewPrefab.transform.localRotation = Quaternion.identity;
             // setPosition
             _jellyView = data;
-            JellySlotController.Instance.CheckNodeJelly(this);
         }
+
+        // public void CheckAllNodeJelly()
+        // {
+        //     if(!_jellyView)
+        //         JellySlotController.Instance.CheckNodeJelly(this);
+        // }
         public void RemoveJellyView()
         {
             _jellyView = null;

@@ -18,8 +18,9 @@ namespace Runtime.Manager
             objSlot.SetActive(false);
             CreateSlot();
         }
-        void CreateSlot()
+        public void CreateSlot()
         {
+            _listJellySlot = new List<JellySlot>();
             GameObjectUtils.Instance.ClearAllChild(rectTransformParent.gameObject);
             for (int i = 0; i < numberSpawn; i++)
             {

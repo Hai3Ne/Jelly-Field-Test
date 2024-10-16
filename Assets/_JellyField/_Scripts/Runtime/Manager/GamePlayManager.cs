@@ -18,6 +18,7 @@ namespace Runtime.Manager
         {
             MissionManager.Instance.LoadLevel();
             JellySlotController.Instance.OnStartGame();
+            JellyManager.Instance.CreateSlot();
         }
     }
 }

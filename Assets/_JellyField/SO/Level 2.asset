@@ -13,18 +13,12 @@ MonoBehaviour:
   m_Name: Level 2
   m_EditorClassIdentifier: 
   level: 2
-  lockedSlot:
-  - lockX: 0
-    lockY: 0
-  - lockX: 4
-    lockY: 0
-  - lockX: 0
-    lockY: 2
-  - lockX: 4
-    lockY: 2
+  lockedSlot: []
   mission:
   - countColorMission: 4
     colorMission: 2
+  - countColorMission: 4
+    colorMission: 1
   settingGrid:
-    rows: 3
-    columns: 5
+    rows: 4
+    columns: 3

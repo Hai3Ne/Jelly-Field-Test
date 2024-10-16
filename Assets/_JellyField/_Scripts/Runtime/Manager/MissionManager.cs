@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core;
 using Core.Utils;
+using Runtime.Controller;
 using Runtime.Model;
 using Runtime.ScriptTableObject;
 using Runtime.View;
@@ -22,6 +23,7 @@ namespace Runtime.Manager
 
         public void LoadLevel()
         {
+            _listMission = new List<MissionVo>();
             LevelSo getSoLevel = PlayerLevelManager.Instance.GetCurrentLevelSo();
             GameObjectUtils.Instance.ClearAllChild(rectTransformMission.gameObject);
             foreach (var mission in getSoLevel.mission)
@@ -39,6 +41,13 @@ namespace Runtime.Manager
         {
             var mission = _listMission.FirstOrDefault(x => x.Data.colorMission == color);
             if (mission != null) mission.UpdateStateMission();
+            var targetMission = _listMission.All(x => x.Data.countColorMission <= 0);
+            if (targetMission)
+            {
+                PopupManager.Instance.ShowPopup();
+                JellySlotController.Instance.ClearAllNode();
+            }
+               
         }
 
     }

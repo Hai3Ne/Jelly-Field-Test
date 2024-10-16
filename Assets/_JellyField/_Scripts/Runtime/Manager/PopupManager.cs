@@ -16,15 +16,21 @@ namespace Runtime.Manager
         {
             popupWin.SetActive(true);
         }
+        public void HidePopup()
+        {
+            popupWin.SetActive(false);
+        }
         public void OnClickNext()
         {
            PlayerLevelManager.Instance.NextLevel();
            GamePlayManager.Instance.InitLevel();
+           HidePopup();
         }
 
         public void OnClickReplay()
         {
             GamePlayManager.Instance.InitLevel();
+            HidePopup();
         }
     }
 }

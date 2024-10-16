@@ -8,6 +8,7 @@ namespace Runtime.View
     public class JellyNodeView : MonoBehaviour
     {
         [SerializeField] private Image colorNode;
+        [SerializeField] private Renderer matNode;
         private List<(int, int)> _neighborNode = new List<(int, int)>();
         public short X { get; set; }
         public short Y { get; set; }
@@ -20,6 +21,7 @@ namespace Runtime.View
             _data = data;
             colorNode.color = ColorForJelly(_data.Color);
             _neighborNode = neighbor;
+            matNode.material.color = ColorForJelly(_data.Color);
         }
         
         public void MergeColor()
@@ -59,6 +61,7 @@ namespace Runtime.View
         private void UpdateState()
         {
             colorNode.color = ColorForJelly(_data.Color);
+            matNode.material.color = ColorForJelly(_data.Color);
         }
     }
 }
