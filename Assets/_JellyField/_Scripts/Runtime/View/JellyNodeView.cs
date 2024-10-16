@@ -1,4 +1,5 @@
-﻿using Runtime.Model;
+﻿using System.Collections.Generic;
+using Runtime.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,22 +8,30 @@ namespace Runtime.View
     public class JellyNodeView : MonoBehaviour
     {
         [SerializeField] private Image colorNode;
+        private List<(int, int)> _neighborNode = new List<(int, int)>();
         public short X { get; set; }
         public short Y { get; set; }
         
         private JellyNode _data;
         public JellyNode Data => _data;
-        public void SetData(JellyNode data)
+        public List<(int, int)> NeighborNode => _neighborNode;
+        public void SetData(JellyNode data, List<(int, int)> neighbor)
         {
             _data = data;
             colorNode.color = ColorForJelly(_data.Color);
+            _neighborNode = neighbor;
         }
-
+        
         public void MergeColor()
         {
            
         }
 
+        public void ChangeColor(JellyColor color)
+        {
+            _data.Color = color;
+            UpdateState();
+        }
         public void ClearColor()
         {
             _data.Color = JellyColor.None;

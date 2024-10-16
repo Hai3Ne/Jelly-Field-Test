@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea94b32e0c84594fa15003964e3d673, type: 3}
+  m_Name: Level 1
+  m_EditorClassIdentifier: 
+  level: 1
+  lockedSlot:
+  - lockX: 0
+    lockY: 0
+  - lockX: 4
+    lockY: 0
+  - lockX: 0
+    lockY: 2
+  - lockX: 4
+    lockY: 2
+  mission:
+  - countColorMission: 4
+    colorMission: 2
+  settingGrid:
+    rows: 3
+    columns: 5

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Core;
 using Core.Utils;
+using Runtime.Manager;
+using Runtime.Model;
+using Runtime.ScriptTableObject;
 using Runtime.View;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,14 +14,24 @@ namespace Runtime.Controller
 {
     public class JellySlotController : ManualSingletonMono<JellySlotController>
     {
+        //structure Process JellySLot
+        private class ProcessJellySlot
+        {
+            public JellyColor TargetColor;
+            public JellySlot TargetSlot;
+            public JellySlot CurrentSlot;
+            public short XTargetSlot;
+            public short YTargetSlot;
+            public short XCurrentSlot;
+            public short YCurrentSlot;
+        }
         [SerializeField] private RectTransform rectTransformSlot;
         [SerializeField] private GameObject objSlot;
         [SerializeField] private GridLayoutGroup slotsLayoutGrid;
-        [SerializeField] private Structure.SettingGridSlot settingGrid;
-        [SerializeField] private List<Structure.LockedSlot> lockedSlot;
+        private Structure.SettingGridSlot _settingGrid;
+        private List<Structure.LockedSlot> _lockedSlot;
         private Structure.SlotType[,] _slotArray;
         private JellySlot[,] _gridSlots;
-        
         public JellySlot[,] GridSlots => _gridSlots;
         public Vector2Int MaxSlotXY
         {
@@ -43,7 +56,7 @@ namespace Runtime.Controller
                 }
             }
         }
-        private void Start()
+        public void OnStartGame()
         {
             GameObjectUtils.Instance.ClearAllChild(rectTransformSlot.gameObject);
             objSlot.SetActive(false);
@@ -53,17 +66,20 @@ namespace Runtime.Controller
 
         private void InitSettingSlot()
         {
-            _gridSlots = new JellySlot[settingGrid.rows,settingGrid.columns];
-            _slotArray = new Structure.SlotType[settingGrid.rows, settingGrid.columns];
+            LevelSo getSoLevel = PlayerLevelManager.Instance.GetCurrentLevelSo();
+            _settingGrid = getSoLevel.settingGrid;
+            _lockedSlot = getSoLevel.lockedSlot;
+            _gridSlots = new JellySlot[_settingGrid.rows,_settingGrid.columns];
+            _slotArray = new Structure.SlotType[_settingGrid.rows, _settingGrid.columns];
         }
 
         private void CreateSlot()
         {
-            for (int y = 0; y < settingGrid.rows; y++)
+            for (int y = 0; y < _settingGrid.rows; y++)
             {
-                for (int x = 0; x < settingGrid.columns; x++)
+                for (int x = 0; x < _settingGrid.columns; x++)
                 {
-                    var checkLock = false;//lockedSlot.Any(type => type.lockX == x && type.lockY == y);
+                    var checkLock = _lockedSlot.Any(type => type.lockX == x && type.lockY == y);
                     GameObject slotObject = GameObjectUtils.Instance.SpawnGameObject(rectTransformSlot,objSlot);
                     JellySlot slot = slotObject.GetComponent<JellySlot>();
                     slot.SetPlaySlotData(checkLock);
@@ -88,50 +104,133 @@ namespace Runtime.Controller
         public void CheckNodeJelly(JellySlot slot)
         {
             
-            List<JellySlot> checkCurrentSlot = new List<JellySlot>();
-            
             // above 
             if (slot.YMatrix - 1 >= 0)
             {
+               
                 if(IsSlotCurrent((slot.XMatrix),(short)(slot.YMatrix -1)))
                 {
-                    // JellySlot slotAbove = _gridSlots[slot.YMatrix, slot.XMatrix - 1];
-                    JellySlot slotAbove = _gridSlots[slot.YMatrix - 1, slot.XMatrix];
-                    var gridNode = slotAbove.JellyView.GridNode;
-                    var getBotLeft = gridNode[1, 0];
-                    var currentSlot = slot.JellyView.GridNode[0, 0];
-                    if (getBotLeft.Data.Color == currentSlot.Data.Color)
+                    ProcessJellySlot process = new ProcessJellySlot()
                     {
-                        // slotAbove.JellyView.CheckAndGetNeighbors();
-                        getBotLeft.ClearColor();
-                        currentSlot.ClearColor();
-                    }
-                    // var getBotRight = gridNode[1, 1].Data.Color;
-                    // checkCurrentSlot.Add(_gridSlots[slot.YMatrix, slot.XMatrix - 1]);
-                    // slot.JellyView.CheckMergeColorAbove(_gridSlots[slot.YMatrix, slot.XMatrix - 1]);
-
+                        TargetSlot = _gridSlots[slot.YMatrix - 1, slot.XMatrix],
+                        CurrentSlot = slot,
+                        XTargetSlot = 0,
+                        YTargetSlot = 1,
+                        XCurrentSlot = 0,
+                        YCurrentSlot = 0,
+                    };
+                    ProcessJellySlot process2 = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix - 1, slot.XMatrix],
+                        CurrentSlot = slot,
+                        XTargetSlot = 1,
+                        YTargetSlot = 1,
+                        XCurrentSlot = 1,
+                        YCurrentSlot = 0,
+                    };
+                    ProcessMatrixJelly(process);
+                    ProcessMatrixJelly(process2);
                 }
             }
             // bottom
-            // if (slot.XMatrix + 1 < settingGrid.rows)
-            // {
-            //     if(IsSlotCurrent((short)(slot.XMatrix + 1),slot.YMatrix))
-            //         checkCurrentSlot.Add(_gridSlots[slot.YMatrix, slot.XMatrix + 1]);
-            // }
+            if (slot.YMatrix + 1 < _settingGrid.rows)
+            {
+                if(IsSlotCurrent((slot.XMatrix),(short)(slot.YMatrix + 1)))
+                {
+                    ProcessJellySlot process = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix + 1, slot.XMatrix],
+                        CurrentSlot = slot,
+                        XTargetSlot = 0,
+                        YTargetSlot = 0,
+                        XCurrentSlot = 0,
+                        YCurrentSlot = 1,
+                    };
+                    ProcessJellySlot process2 = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix + 1, slot.XMatrix],
+                        CurrentSlot = slot,
+                        XTargetSlot = 1,
+                        YTargetSlot = 0,
+                        XCurrentSlot = 1,
+                        YCurrentSlot = 1,
+                    };
+                    ProcessMatrixJelly(process);
+                    ProcessMatrixJelly(process2);
+                }
+            }
             // // left
-            // if (slot.YMatrix - 1 >= 0)
-            // {
-            //     if(IsSlotCurrent(slot.XMatrix,(short)(slot.YMatrix - 1)))
-            //         checkCurrentSlot.Add(_gridSlots[slot.YMatrix - 1, slot.XMatrix]);
-            // }
+            if (slot.XMatrix - 1 >= 0)
+            {
+                if (IsSlotCurrent((short)(slot.XMatrix - 1),slot.YMatrix))
+                {
+                    ProcessJellySlot process = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix, slot.XMatrix - 1],
+                        CurrentSlot = slot,
+                        XTargetSlot = 1,
+                        YTargetSlot = 0,
+                        XCurrentSlot = 0,
+                        YCurrentSlot = 0,
+                    };
+                    ProcessJellySlot process2 = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix, slot.XMatrix - 1],
+                        CurrentSlot = slot,
+                        XTargetSlot = 1,
+                        YTargetSlot = 1,
+                        XCurrentSlot = 0,
+                        YCurrentSlot = 1,
+                    };
+                    ProcessMatrixJelly(process);
+                    ProcessMatrixJelly(process2);
+                }
+                   
+            }
             // // right
-            // if (slot.YMatrix + 1 < settingGrid.columns)
-            // {
-            //     if(IsSlotCurrent(slot.XMatrix,(short)(slot.YMatrix + 1)))
-            //         checkCurrentSlot.Add(_gridSlots[slot.YMatrix + 1, slot.XMatrix]);
-            // }
+            if (slot.XMatrix + 1 < _settingGrid.columns)
+            {
+                if (IsSlotCurrent((short)(slot.XMatrix + 1), slot.YMatrix))
+                {
+                    ProcessJellySlot process = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix, slot.XMatrix + 1],
+                        CurrentSlot = slot,
+                        XTargetSlot = 0,
+                        YTargetSlot = 0,
+                        XCurrentSlot = 1,
+                        YCurrentSlot = 0,
+                    };
+                    ProcessJellySlot process2 = new ProcessJellySlot()
+                    {
+                        TargetSlot = _gridSlots[slot.YMatrix, slot.XMatrix + 1],
+                        CurrentSlot = slot,
+                        XTargetSlot = 0,
+                        YTargetSlot = 1,
+                        XCurrentSlot = 1,
+                        YCurrentSlot = 1,
+                    };
+                    ProcessMatrixJelly(process);
+                    ProcessMatrixJelly(process2);
+                }
+                
+            }
         }
 
+        private void ProcessMatrixJelly(ProcessJellySlot process)
+        {
+            if (!process.TargetSlot.JellyView || !process.CurrentSlot.JellyView)
+                return;
+            JellyNodeView[,] gridNodeTarget = process.TargetSlot.JellyView.GridNode;
+            JellyNodeView getTargetJelly = gridNodeTarget[process.YTargetSlot, process.XTargetSlot];
+            JellyNodeView currentSlot = process.CurrentSlot.JellyView.GridNode[process.YCurrentSlot, process.XCurrentSlot];
+            if (getTargetJelly.Data.Color == currentSlot.Data.Color)
+            {
+                MissionManager.Instance.UpdateStateMission(getTargetJelly.Data.Color);
+                process.TargetSlot.JellyView.DealWithColor(getTargetJelly.Data.Color, process.XTargetSlot, process.YTargetSlot);
+                process.CurrentSlot.JellyView.DealWithColor(currentSlot.Data.Color, process.XCurrentSlot, process.YCurrentSlot);
+            }
+        }
         private bool IsSlotCurrent(short x, short y)
         {
             return  this[y,x].JellyView;

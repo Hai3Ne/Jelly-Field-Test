@@ -29,6 +29,7 @@ namespace Runtime.Model
         private JellyColor GetRandomColor()
         {
             var colors = Enum.GetValues(typeof(JellyColor));
+            // return (JellyColor)colors.GetValue(UnityEngine.Random.Range(1, 3));
             return (JellyColor)colors.GetValue(UnityEngine.Random.Range(1, colors.Length));
         }
 
