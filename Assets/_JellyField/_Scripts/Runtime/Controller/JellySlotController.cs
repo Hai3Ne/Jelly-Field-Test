@@ -113,6 +113,9 @@ namespace Runtime.Controller
 
         public void CheckAllNode()
         {
+            var checkLose = _gridSlots.Cast<JellySlot>().All(x => x.JellyView);
+            if(checkLose)
+                PopupManager.Instance.OnLose();
             foreach (var slot in _gridSlots)
             {
                 if(slot.JellyView)

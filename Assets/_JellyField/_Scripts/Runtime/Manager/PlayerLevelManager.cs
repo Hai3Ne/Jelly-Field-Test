@@ -24,14 +24,21 @@ namespace Runtime.Manager
         public void NextLevel()
         {
             var loadLevel = LoadLevel() + 1;
-            PlayerPrefs.SetInt(LevelKey, loadLevel);
+            if(loadLevel > levelSos.Count)
+                PlayerPrefs.SetInt(levelKey, 1);
+            else
+                PlayerPrefs.SetInt(levelKey, loadLevel);
             PlayerPrefs.Save();
         }
         public int LoadLevel()
         {
-            int level = PlayerPrefs.GetInt(LevelKey, 1);
+            int level = PlayerPrefs.GetInt(levelKey, 1);
             Debug.Log("Loaded level: " + level);
-            return level;
+            if (level > levelSos.Count)
+            {
+                SaveLevel(1);
+            }
+            return level > levelSos.Count ? 1 : level;
         }
         public void ResetLevel()
         {
@@ -49,7 +56,7 @@ namespace Runtime.Manager
             }
             else
             {
-                int savedLevel = PlayerPrefs.GetInt(levelKey);
+                int savedLevel = LoadLevel();
                 Debug.Log("Loaded existing player level: " + savedLevel);
                 return levelSos.FirstOrDefault(x => x.level == savedLevel);
             }

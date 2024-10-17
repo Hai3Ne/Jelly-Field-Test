@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Runtime.Animation;
 using Runtime.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ namespace Runtime.View
     {
         [SerializeField] private Image colorNode;
         [SerializeField] private Renderer matNode;
+        [SerializeField] private SoftCube softCube;
         private List<(int, int)> _neighborNode = new List<(int, int)>();
         public short X { get; set; }
         public short Y { get; set; }
@@ -24,19 +26,16 @@ namespace Runtime.View
             matNode.material.color = ColorForJelly(_data.Color);
         }
         
-        public void MergeColor()
-        {
-           
-        }
-
         public void ChangeColor(JellyColor color)
         {
             _data.Color = color;
+            softCube.ScaleUp();
             UpdateState();
         }
         public void ClearColor()
         {
             _data.Color = JellyColor.None;
+            softCube.ScaleDown();
             UpdateState();
         }
         private Color ColorForJelly(JellyColor color)
@@ -63,5 +62,7 @@ namespace Runtime.View
             colorNode.color = ColorForJelly(_data.Color);
             matNode.material.color = ColorForJelly(_data.Color);
         }
+        
+        
     }
 }

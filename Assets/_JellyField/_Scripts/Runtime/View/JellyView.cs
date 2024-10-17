@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Core.Utils;
 using Runtime.Model;
@@ -82,9 +83,15 @@ namespace Runtime.View
                     colorNeighbors.ClearColor();
                 }
             }
-            if(!CheckClearJellyColor())
-             ProcessEmptyColor();
+
+            if (!CheckClearJellyColor())
+            {
+                if(gameObject.activeSelf)
+                    StartCoroutine(ProcessEmptyColor());
+            }
+           
         }
+
 
         private bool CheckClearJellyColor()
         {
@@ -100,8 +107,9 @@ namespace Runtime.View
             return true;
         }
 
-        private void ProcessEmptyColor()
+        IEnumerator ProcessEmptyColor()
         {
+            yield return new WaitForSeconds(0.5f);
             var countActiveColor = _gridNode.Cast<JellyNodeView>().Where(node => node.Data.Color != JellyColor.None).ToList();
             if (countActiveColor.Count() == 1)
             {
@@ -110,7 +118,8 @@ namespace Runtime.View
                     if(node.Data.Color == JellyColor.None)
                         node.ChangeColor(countActiveColor.FirstOrDefault()!.Data.Color);
                 }
-                return;
+
+                yield break;
             }
             foreach (var node in _gridNode)
             {

@@ -44,7 +44,7 @@ namespace Runtime.Manager
             var targetMission = _listMission.All(x => x.Data.countColorMission <= 0);
             if (targetMission)
             {
-                PopupManager.Instance.ShowPopup();
+                PopupManager.Instance.OnWin();
                 JellySlotController.Instance.ClearAllNode();
             }
                

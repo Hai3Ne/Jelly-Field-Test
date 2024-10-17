@@ -36,6 +36,10 @@ namespace Runtime.View
         [SerializeField] private Color colorRed;
 
         [SerializeField] private Color colorGreen;
+
+        [SerializeField] private GameObject objCanPush;
+        [SerializeField] private GameObject objCanNotPush;
+        
         private JellyView _jellyView;
         private TypeSlotEnum _typeSlot;
         public TypeSlotEnum TypeSlot => _typeSlot;
@@ -45,11 +49,17 @@ namespace Runtime.View
 
         private ColorBackgroundSlot _colorBackgroundSlot;
         private bool _isLock;
+        public bool IsLock => _isLock;
 
         private void Start()
         {
             if(jellyViewPrefab !=null)
                 jellyViewPrefab.SetActive(false);
+            if (objCanPush && objCanNotPush)
+            {
+                objCanPush.SetActive(false);
+                objCanNotPush.SetActive(false);
+            }
         }
 
         public void SetPlaySlotData(bool isLock)
@@ -78,7 +88,15 @@ namespace Runtime.View
         public void ChangeBackGround(ColorBackgroundSlot colorE)
         {
             _colorBackgroundSlot = colorE;
-            UpdateBackgroundColor();
+            objCanPush.SetActive(colorE == ColorBackgroundSlot.Green);
+            objCanNotPush.SetActive(colorE == ColorBackgroundSlot.Red);
+            if (colorE == ColorBackgroundSlot.None)
+            {
+                objCanPush.SetActive(false);
+                objCanNotPush.SetActive(false);
+            }
+          
+            
         }
         public void SetNewParentAndData(JellyView data)
         {
@@ -98,10 +116,11 @@ namespace Runtime.View
         public void RemoveJellyView()
         {
             _jellyView = null;
-            // if (_typeSlot == TypeSlotEnum.OwnerSlot && jellyView == null)
-            // {
-            //     SetOwnerSlotData();
-            // }
+            if (objCanPush && objCanNotPush)
+            {
+                objCanPush.SetActive(false);
+                objCanNotPush.SetActive(false);
+            }
         }
         private void UpdateBackgroundColor()
         {

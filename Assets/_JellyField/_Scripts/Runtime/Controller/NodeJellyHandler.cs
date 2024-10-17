@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Runtime.Animation;
 using Runtime.Manager;
 using Runtime.View;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
@@ -14,6 +18,8 @@ namespace Runtime.Controller
         private RectTransform rectTransform;
         [SerializeField]
         private JellyView jellyView;
+        [SerializeField]
+        private List<SoftCube> listSoftCube = new List<SoftCube>();
         
         private Vector2 _dragOffset;
         private Vector2 _dragVelocity;
@@ -29,7 +35,7 @@ namespace Runtime.Controller
 
         private JellySlot _oldSlot;
         [Header("Debug")]
-        [ReadOnly] public Vector2Int currentSlot;
+        [ReadOnly] public Vector2Int currentSlot = new Vector2Int(2,2);
         [ReadOnly] public Vector2Int lastSlot;
         private Camera _camera;
 
@@ -37,16 +43,17 @@ namespace Runtime.Controller
         {
             _camera = Camera.main;
             isSelect = false;
-            isOver = false;
+            isOver = true;
             isMoving = false;
+            listSoftCube = gameObject.GetComponentsInChildren<SoftCube>().ToList();
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!CheckAnyItemMoving())
-            {
-                isOver = true;
-            }
+            // if (!CheckAnyItemMoving())
+            // {
+            //     isOver = true;
+            // }
         }
         public void OnPointerExit(PointerEventData eventData)
         {
@@ -57,8 +64,10 @@ namespace Runtime.Controller
             if ((!isOver || CheckAnyItemMoving()) || script.TypeSlot == JellySlot.TypeSlotEnum.PlaySlot)
                 return;
             isSelect = true;
+            isMoving = true;
             script.RemoveJellyView();
             _oldSlot = script;
+            listSoftCube.ForEach(x=>x.ShakeLightOnce());
         }
         public void OnPointerUp(PointerEventData eventData)
         {
@@ -75,7 +84,7 @@ namespace Runtime.Controller
             slot.SetNewParentAndData(jellyView);
             JellyManager.Instance.CheckOwnerSlot();
             JellySlotController.Instance.CheckAllNode();
-            
+            listSoftCube.ForEach(x=>x.KillDoTween());
             ClearAll();
 
         }
@@ -118,7 +127,7 @@ namespace Runtime.Controller
                     {
                         JellySlot slot = JellySlotController.Instance[y, x];
                         slot.ChangeBackGround(JellySlot.ColorBackgroundSlot.None);
-                        if (!slot) continue;
+                        if (slot.IsLock) continue;
                         Vector2 slotPosition = slot.transform.position;
 
                         float slotDistance = Vector2.Distance(dragPos, slotPosition);
@@ -132,7 +141,6 @@ namespace Runtime.Controller
                         }
                     }
                 }
-
                 currentSlot = newSlotPosition;
             }
             GetInput();
@@ -149,12 +157,7 @@ namespace Runtime.Controller
                 if (isSelect)
                 {
                     if (!isMoving)
-                    {
-                        Vector2 sizeDelta = rectTransform.sizeDelta;
-                        // _dragOffset = new Vector2(sizeDelta.x / 2f, -sizeDelta.y / 2f);
                         isMoving = true;
-                    }
-
                     CheckHighLightInventorySlot();
                     transform.SetAsLastSibling();
                 }
@@ -163,8 +166,7 @@ namespace Runtime.Controller
         private void CheckHighLightInventorySlot()
         {
             JellySlot slot = JellySlotController.Instance[currentSlot.y, currentSlot.x];
-            
-            if (!slot) return;
+            if (slot.IsLock) return;
             slot.ChangeBackGround(!slot.JellyView ? JellySlot.ColorBackgroundSlot.Green : JellySlot.ColorBackgroundSlot.Red);
         }
     }
