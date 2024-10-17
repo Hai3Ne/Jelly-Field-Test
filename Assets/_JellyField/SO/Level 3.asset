@@ -19,8 +19,12 @@ MonoBehaviour:
   - lockX: 2
     lockY: 4
   mission:
-  - countColorMission: 4
+  - countColorMission: 2
     colorMission: 2
+  - countColorMission: 4
+    colorMission: 3
+  - countColorMission: 2
+    colorMission: 4
   settingGrid:
     rows: 5
     columns: 3

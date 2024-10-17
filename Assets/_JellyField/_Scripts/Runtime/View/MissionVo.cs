@@ -1,4 +1,5 @@
-﻿using Runtime.Model;
+﻿using Runtime.Manager;
+using Runtime.Model;
 using Runtime.ScriptTableObject;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Runtime.View
     {
         [SerializeField] private Image imageColor;
         [SerializeField] private TextMeshProUGUI txtMission;
+        
         [SerializeField] private GameObject complete;
 
         private LevelMission _data;
@@ -22,6 +24,7 @@ namespace Runtime.View
                 colorMission = data.colorMission
             };
             txtMission.text = data.countColorMission.ToString();
+          
             imageColor.color = ColorForJelly(_data.colorMission);
             txtMission.gameObject.SetActive(!(_data.countColorMission <= 0));
             complete.SetActive(_data.countColorMission <= 0);

@@ -14,7 +14,13 @@ namespace Runtime.Manager
         private const string levelKey = "PlayerLevel";
 
         public string LevelKey => levelKey;
-        
+
+
+        public int GetLevel()
+        {
+            int level = PlayerPrefs.GetInt(levelKey, 1);
+            return level > levelSos.Count ? 1 : level;
+        }
         public void SaveLevel(int level)
         {
             PlayerPrefs.SetInt(LevelKey, level);
@@ -39,11 +45,6 @@ namespace Runtime.Manager
                 SaveLevel(1);
             }
             return level > levelSos.Count ? 1 : level;
-        }
-        public void ResetLevel()
-        {
-            PlayerPrefs.DeleteKey(LevelKey);
-            Debug.Log("Level data reset.");
         }
         
         public LevelSo GetCurrentLevelSo()

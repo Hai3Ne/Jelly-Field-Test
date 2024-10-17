@@ -7,6 +7,7 @@ using Runtime.Controller;
 using Runtime.Model;
 using Runtime.ScriptTableObject;
 using Runtime.View;
+using TMPro;
 using UnityEngine;
 
 namespace Runtime.Manager
@@ -15,6 +16,7 @@ namespace Runtime.Manager
     {
         [SerializeField] private GameObject objPrefabMission;
         [SerializeField] private RectTransform rectTransformMission;
+        [SerializeField] private TextMeshProUGUI txtLevel;
         private List<MissionVo> _listMission = new List<MissionVo>();
         private void Start()
         {
@@ -35,6 +37,7 @@ namespace Runtime.Manager
                 if(!_listMission.Contains(script))
                     _listMission.Add(script);
             }
+            txtLevel.text = $"Level: {PlayerLevelManager.Instance.GetLevel()}";
         }
 
         public void UpdateStateMission(JellyColor color)
