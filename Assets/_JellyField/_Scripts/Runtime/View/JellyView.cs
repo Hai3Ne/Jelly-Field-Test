@@ -107,6 +107,7 @@ namespace Runtime.View
             return true;
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         IEnumerator ProcessEmptyColor()
         {
             yield return new WaitForSeconds(0.5f);
@@ -132,6 +133,8 @@ namespace Runtime.View
                     node.ChangeColor(valueColor);
                 }
             }
+
+            JellySlotController.Instance.CheckAllNode();
         }
         private List<(int, int)> GetNeighbors(int row, int col)
         {
